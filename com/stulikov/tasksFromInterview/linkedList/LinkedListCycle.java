@@ -2,21 +2,21 @@ package com.stulikov.tasksFromInterview.linkedList;
 
 public class LinkedListCycle {
     public static void main(String[] args) {
-        ListNode listNode2 = new ListNode(2);
-        head.next = listNode2;
-        ListNode listNode3 = new ListNode(0);
-        listNode2.next = listNode3;
-        ListNode listNode4 = new ListNode(-4);
-        listNode3.next = listNode4;
-
-        listNode4.next = listNode2;
-
-        System.out.println(hasCycle(head));
+//        ListNode listNode2 = new ListNode(2);
+//        head.next = listNode2;
+//        ListNode listNode3 = new ListNode(0);
+//        listNode2.next = listNode3;
+//        ListNode listNode4 = new ListNode(-4);
+//        listNode3.next = listNode4;
+//
+//        listNode4.next = listNode2;
+//
+//        System.out.println(hasCycle(head));
     }
 
-    public static boolean hasCycle(ListNode head) {
-
-    }
+//    public static boolean hasCycle(ListNode head) {
+//
+//    }
 
 }
 

@@ -1,8 +1,14 @@
 package com.stulikov.tasksFromInterview.window;
 
+import java.util.Arrays;
+
 public class MinimumSizeSubarraySum {
 
-    public int[] maxSubArray(int[] nums) {
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(maxSubArray(new int[]{1, 4, -5, 2})));
+    }
+
+    public static int[] maxSubArray(int[] nums) {
         if (nums == null || nums.length == 0) {
             return new int[0];
         }

@@ -1,4 +1,4 @@
-package com.stulikov.tasksFromInterview.strings;
+package com.stulikov.tasksFromInterview.charCount;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.stulikov.tasksFromInterview;
+package com.stulikov.tasksFromInterview.stack;
 
 import java.util.Stack;
 

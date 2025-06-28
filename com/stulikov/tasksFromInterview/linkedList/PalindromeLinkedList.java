@@ -20,8 +20,6 @@ public class PalindromeLinkedList {
         while (fast != null && fast.next != null) {
             slow = slow.next;
             fast = fast.next.next;
-
-
         }
 
         ListNode prev = null;
@@ -42,10 +40,6 @@ public class PalindromeLinkedList {
 
         return true;
     }
-
-
-
-
 
       public static class ListNode {
           int val;

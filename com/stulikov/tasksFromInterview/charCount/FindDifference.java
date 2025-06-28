@@ -2,7 +2,7 @@ package com.stulikov.tasksFromInterview.charCount;
 
 public class FindDifference {
     public static void main(String[] args) {
-        System.out.println(findTheDifference("abcd",  "abcde"));
+        System.out.println(findTheDifference("abcd",  "abced"));
     }
 
     public static char findTheDifference(String s, String t) {

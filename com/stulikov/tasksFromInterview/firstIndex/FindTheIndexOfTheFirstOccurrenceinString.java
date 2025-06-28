@@ -3,7 +3,7 @@ package com.stulikov.tasksFromInterview.firstIndex;
 public class FindTheIndexOfTheFirstOccurrenceinString {
 
     public static void main(String[] args) {
-        System.out.println(strStr("leetрррcode", "code"));
+        System.out.println(strStr("рррcode", "code"));
     }
 
     public static int strStr(String haystack, String needle) {

@@ -2,7 +2,7 @@ package com.stulikov.tasksFromInterview.charCount;
 
 public class RansomNote {
     public static void main(String[] args) {
-        System.out.println(canConstruct("aa", "aab"));
+        System.out.println(canConstruct("ab", "aba"));
     }
 
     public static boolean canConstruct(String ransomNote, String magazine) {

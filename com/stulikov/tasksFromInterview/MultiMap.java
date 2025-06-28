@@ -31,6 +31,5 @@ public class MultiMap {
         }).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
         System.out.println(longIntegerMap);
-
     }
 }

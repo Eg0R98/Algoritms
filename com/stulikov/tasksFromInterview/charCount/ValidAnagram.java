@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class ValidAnagram {
     public static void main(String[] args) {
-        System.out.println(isAnagramArray("anagram", "nagaram"));
+        System.out.println(isAnagramArray("anagramo", "nagaramp"));
     }
 
     public static boolean isAnagramMap(String s, String t) {

@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class TwoSum {
     public static void main(String[] args) {
-        System.out.println(Arrays.toString(twoSum(new int[]{3, 2, 4}, 6)));
+        System.out.println(Arrays.toString(twoSum(new int[]{3, 2, 4,3,3}, 6)));
     }
 
     public static int[] twoSum(int[] nums, int target) {

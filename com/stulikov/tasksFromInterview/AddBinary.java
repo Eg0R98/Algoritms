@@ -2,6 +2,7 @@ package com.stulikov.tasksFromInterview;
 
 public class AddBinary {
     public static void main(String[] args) {
+
         System.out.println(addBinary("11", "11"));
     }
 

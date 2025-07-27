@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class PermutationString {
 
     public static void main(String[] args) {
-        System.out.println(checkInclusion("ab", "eidabooo"));
+        System.out.println(checkInclusion("ab", "eidbooao"));
     }
 
     public static boolean checkInclusion(String s1, String s2) {

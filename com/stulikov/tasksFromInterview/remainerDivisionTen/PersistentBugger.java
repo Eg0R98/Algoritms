@@ -1,6 +1,9 @@
 package com.stulikov.tasksFromInterview.remainerDivisionTen;
 
 public class PersistentBugger {
+    public static void main(String[] args) {
+        System.out.println(persistenceIter(85));
+    }
 
     public static int persistenceRec(long n) {
         if (n < 10) {  // Базовый случай: число уже однозначное

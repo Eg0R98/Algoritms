@@ -1,50 +1,67 @@
 package com.stulikov.atm;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ATM {  // Хранение купюр: номинал -> количество
 
     private final Map<Integer, Integer> banknotes = new TreeMap<>(Comparator.reverseOrder()); // по убыванию
 
-    // Синхронизированное пополнение
-    public synchronized void deposit(int denomination, int count) {
-        if (denomination <= 0 || count <= 0) throw new IllegalArgumentException("Invalid deposit");
-        banknotes.merge(denomination, count, Integer::sum);
+    private final ReentrantLock lock = new ReentrantLock();
+
+    public Optional<Map<Integer, Integer>> withdraw(int amount, List<Integer> preferredDenominations) {
+        lock.lock();
+        try {
+            Map<Integer, Integer> copy = new TreeMap<>(Comparator.reverseOrder());
+            for (int denom : preferredDenominations) {
+                if (banknotes.containsKey(denom)) {
+                    copy.put(denom, banknotes.get(denom));
+                }
+            }
+
+            Map<Integer, Integer> result = tryWithdraw(copy, amount);
+            if (result == null) return Optional.empty();
+
+            // Списываем деньги
+            for (Map.Entry<Integer, Integer> entry : result.entrySet()) {
+                banknotes.merge(entry.getKey(), -entry.getValue(), Integer::sum);
+            }
+            return Optional.of(result);
+        } finally {
+            lock.unlock();
+        }
     }
 
-    // Выдача с учетом предпочтительных номиналов
-    public synchronized Optional<Map<Integer, Integer>> withdraw(int amount, List<Integer> preferredDenominations) {
-        if (amount <= 0) return Optional.empty();
-
-        // Используем только те номиналы, которые есть и в банкомате, и в предпочтениях
-        Set<Integer> allowed = new HashSet<>(preferredDenominations);
-        Map<Integer, Integer> available = banknotes.entrySet().stream()
-                                                   .filter(e -> allowed.contains(e.getKey()))
-                                                   .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                                                           (a, b) -> b, LinkedHashMap::new));
-
-        Map<Integer, Integer> result = new LinkedHashMap<>();
-        int remaining = amount;
-
+    private Map<Integer, Integer> tryWithdraw(Map<Integer, Integer> available, int amount) {
+        Map<Integer, Integer> used = new LinkedHashMap<>();
         for (Map.Entry<Integer, Integer> entry : available.entrySet()) {
             int denom = entry.getKey();
-            int availableCount = entry.getValue();
-            int needed = remaining / denom;
+            int count = entry.getValue();
+            int needed = Math.min(count, amount / denom);
             if (needed > 0) {
-                int take = Math.min(needed, availableCount);
-                result.put(denom, take);
-                remaining -= take * denom;
+                used.put(denom, needed);
+                amount -= denom * needed;
             }
         }
+        return amount == 0 ? used : null;
+    }
 
-        if (remaining == 0) {
-            // Успешно: обновляем банкомат
-            result.forEach((k, v) -> banknotes.merge(k, -v, Integer::sum));
-            return Optional.of(result);
+    public void deposit(int denomination, int count) {
+        lock.lock();
+        try {
+            banknotes.merge(denomination, count, Integer::sum);
+        } finally {
+            lock.unlock();
         }
+    }
 
-        return Optional.empty(); // невозможно выдать сумму
+    public Map<Integer, Integer> getAvailableBanknotes() {
+        lock.lock();
+        try {
+            return new TreeMap<>(banknotes);
+        } finally {
+            lock.unlock();
+        }
     }
 
     // Простая выдача без предпочтений
@@ -52,9 +69,51 @@ public class ATM {  // Хранение купюр: номинал -> колич
         return withdraw(amount, new ArrayList<>(banknotes.keySet()));
     }
 
-    public synchronized Map<Integer, Integer> getBalance() {
-        return new TreeMap<>(banknotes);
-    }
+    // Синхронизированное пополнение
+//    public synchronized void deposit(int denomination, int count) {
+//        if (denomination <= 0 || count <= 0) throw new IllegalArgumentException("Invalid deposit");
+//        banknotes.merge(denomination, count, Integer::sum);
+//    }
+
+
+
+    // Выдача с учетом предпочтительных номиналов
+//    public synchronized Optional<Map<Integer, Integer>> withdraw(int amount, List<Integer> preferredDenominations) {
+//        if (amount <= 0) return Optional.empty();
+//
+//        // Используем только те номиналы, которые есть и в банкомате, и в предпочтениях
+//        Set<Integer> allowed = new HashSet<>(preferredDenominations);
+//        Map<Integer, Integer> available = banknotes.entrySet().stream()
+//                                                   .filter(e -> allowed.contains(e.getKey()))
+//                                                   .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+//                                                           (a, b) -> b, LinkedHashMap::new));
+//
+//        Map<Integer, Integer> result = new LinkedHashMap<>();
+//        int remaining = amount;
+//
+//        for (Map.Entry<Integer, Integer> entry : available.entrySet()) {
+//            int denom = entry.getKey();
+//            int availableCount = entry.getValue();
+//            int needed = remaining / denom;
+//            if (needed > 0) {
+//                int take = Math.min(needed, availableCount);
+//                result.put(denom, take);
+//                remaining -= take * denom;
+//            }
+//        }
+//
+//        if (remaining == 0) {
+//            // Успешно: обновляем банкомат
+//            result.forEach((k, v) -> banknotes.merge(k, -v, Integer::sum));
+//            return Optional.of(result);
+//        }
+//
+//        return Optional.empty(); // невозможно выдать сумму
+//    }
+
+//    public synchronized Map<Integer, Integer> getBalance() {
+//        return new TreeMap<>(banknotes);
+//    }
 
     // Пример использования
     public static void main(String[] args) {
@@ -66,6 +125,6 @@ public class ATM {  // Хранение купюр: номинал -> колич
 
         System.out.println("Выдача без предпочтений: " + atm.withdraw(1850));
         System.out.println("С предпочтением 100 и 50: " + atm.withdraw(150, List.of(100, 50))); // 1x100, 1x50
-        System.out.println("Баланс: " + atm.getBalance());
+        System.out.println("Баланс: " + atm.getAvailableBanknotes());
     }
 }
